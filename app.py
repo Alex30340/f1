@@ -1,29 +1,37 @@
-from dash import Dash, html, dcc, Input, Output
+import dash
+from dash import html, dcc
 import dash_bootstrap_components as dbc
 from core.app_instance import app
-from components.navbar import navbar
-import pages.analyse, pages.dashboard, pages.backtest, pages.education, pages.lab
+import pages.analyse
+import pages.dashboard
+import pages.backtest
+import pages.education
+import pages.lab
+
+app = dash.Dash(
+    __name__,
+    use_pages=True,
+    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    suppress_callback_exceptions=True  # ← Cette ligne est essentielle
+)
 
 app.layout = html.Div([
     dcc.Location(id='url'),
-    navbar,
-    html.Div(id='page-content')
+    dbc.NavbarSimple(
+        brand="Forex Analyzer",
+        color="dark",
+        dark=True,
+        children=[
+            dbc.NavItem(dcc.Link("Accueil", href="/", className="nav-link")),
+            dbc.NavItem(dcc.Link("Analyse", href="/analyse", className="nav-link")),
+            dbc.NavItem(dcc.Link("Dashboard", href="/dashboard", className="nav-link")),
+            dbc.NavItem(dcc.Link("Backtest", href="/backtest", className="nav-link")),
+            dbc.NavItem(dcc.Link("Éducation", href="/education", className="nav-link")),
+            dbc.NavItem(dcc.Link("LAB", href="/lab", className="nav-link"))
+        ]
+    ),
+    dash.page_container
 ])
 
-@app.callback(Output('page-content', 'children'), Input('url', 'pathname'))
-def display_page(pathname):
-    if pathname == "/analyse":
-        return pages.analyse.layout
-    elif pathname == "/dashboard":
-        return pages.dashboard.layout
-    elif pathname == "/backtest":
-        return pages.backtest.layout
-    elif pathname == "/education":
-        return pages.education.layout
-    elif pathname == "/lab":
-        return pages.lab.layout
-    else:
-        return html.H1("Page non trouvée", style={"padding": "100px", "color": "red"})
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=8080)
+if __name__ == '__main__':
+    app.run_server(debug=True, host="0.0.0.0", port=8080)
