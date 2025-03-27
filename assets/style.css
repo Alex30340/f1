@@ -1,0 +1,13 @@
+body {
+  background-color: #111;
+  color: #eee;
+  font-family: 'Segoe UI', sans-serif;
+}
+a.nav-link {
+  margin: 0 10px;
+  color: #f0b90b;
+  text-decoration: none;
+}
+a.nav-link:hover {
+  color: #fff;
+}
