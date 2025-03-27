@@ -54,16 +54,26 @@ def detect_candlestick_patterns(df):
         o, h, l, c = df.iloc[i][['Open', 'High', 'Low', 'Close']]
         po, ph, pl, pc = df.iloc[i-1][['Open', 'High', 'Low', 'Close']]
 
+        # Doji
         if abs(o - c) <= (h - l) * 0.1:
             patterns.append((df.index[i], 'Doji'))
+
+        # Engulfing Bullish
         elif c > o and po > pc and c > po and o < pc:
             patterns.append((df.index[i], 'Engulfing Bullish'))
+
+        # Engulfing Bearish
         elif o > c and pc > po and o > pc and c < po:
             patterns.append((df.index[i], 'Engulfing Bearish'))
+
+        # Hammer
         elif (h - l) > 3 * abs(o - c) and (c - l) / (0.001 + h - l) > 0.6:
             patterns.append((df.index[i], 'Hammer'))
+
+        # Shooting Star
         elif (h - l) > 3 * abs(o - c) and (h - c) / (0.001 + h - l) > 0.6:
             patterns.append((df.index[i], 'Shooting Star'))
+
     return patterns
 
 @dash.get_app().callback(
@@ -129,13 +139,11 @@ def run_analysis(n, symbol, interval):
         fig.add_shape(type="line", x0=date, x1=date, y0=level*0.995, y1=level*1.005,
                       line=dict(color="purple", width=1, dash="dot"))
 
-    pattern_alerts = []
-    for date, name in patterns:
-        pattern_alerts.append(f"{name} détecté le {date.strftime('%Y-%m-%d')}")
+    for date, pattern in patterns:
         fig.add_annotation(
             x=date,
             y=df.loc[date]['High'] * 1.01,
-            text=name,
+            text=pattern,
             showarrow=True,
             arrowhead=1,
             font=dict(color="yellow"),
@@ -153,9 +161,12 @@ def run_analysis(n, symbol, interval):
         xaxis_rangeslider_visible=False
     )
 
+    pattern_alerts = [f"{name} détecté le {date.strftime('%Y-%m-%d')}" for date, name in patterns]
+
     return html.Div([
         html.H5(f"Entrée : {entry:.2f} | SL : {sl:.2f} | TP : {tp:.2f} | RR : {rr}"),
-        html.Ul([html.Li(a) for a in alerts]) if alerts else html.P("Aucune alerte détectée."),
+        html.Ul([html.Li(a) for a in alerts]),
+        html.Hr(),
         html.H6("Patterns détectés :"),
         html.Ul([html.Li(p) for p in pattern_alerts]) if pattern_alerts else html.P("Aucun pattern détecté.")
     ]), fig
