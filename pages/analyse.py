@@ -48,7 +48,35 @@ def detect_levels(df, window=5):
             levels.append((df.index[i], low if is_support else high))
     return levels
 
-@dash.get_app().callback(
+def detect_candlestick_patterns(df):
+    patterns = []
+    for i in range(1, len(df)):
+        o, h, l, c = df.iloc[i][['Open', 'High', 'Low', 'Close']]
+        po, ph, pl, pc = df.iloc[i-1][['Open', 'High', 'Low', 'Close']]
+
+        # Doji
+        if abs(o - c) <= (h - l) * 0.1:
+            patterns.append((df.index[i], 'Doji'))
+
+        # Engulfing Bullish
+        elif c > o and po > pc and c > po and o < pc:
+            patterns.append((df.index[i], 'Engulfing Bullish'))
+
+        # Engulfing Bearish
+        elif o > c and pc > po and o > pc and c < po:
+            patterns.append((df.index[i], 'Engulfing Bearish'))
+
+        # Hammer
+        elif (h - l) > 3 * abs(o - c) and (c - l) / (0.001 + h - l) > 0.6:
+            patterns.append((df.index[i], 'Hammer'))
+
+        # Shooting Star
+        elif (h - l) > 3 * abs(o - c) and (h - c) / (0.001 + h - l) > 0.6:
+            patterns.append((df.index[i], 'Shooting Star'))
+
+    return patterns
+
+().callback(
     Output("results", "children"),
     Output("chart", "figure"),
     Input("analyze-button", "n_clicks"),
