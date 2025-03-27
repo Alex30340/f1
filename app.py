@@ -1,3 +1,4 @@
+import dash  # ← cette ligne manquait
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 from core.app_instance import app
