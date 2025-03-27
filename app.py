@@ -1,7 +1,6 @@
 import dash
 from dash import html, dcc
 import dash_bootstrap_components as dbc
-from core.app_instance import app
 import pages.analyse
 import pages.dashboard
 import pages.backtest
@@ -12,7 +11,7 @@ app = dash.Dash(
     __name__,
     use_pages=True,
     external_stylesheets=[dbc.themes.BOOTSTRAP],
-    suppress_callback_exceptions=True  # ← Cette ligne est essentielle
+    suppress_callback_exceptions=True  # ← Gère les callbacks de pages dynamiques
 )
 
 app.layout = html.Div([
