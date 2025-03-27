@@ -1,12 +1,9 @@
-import dash  # ← cette ligne manquait
+dash.use_pages :
+
+import dash
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 from core.app_instance import app
-import pages.analyse
-import pages.dashboard
-import pages.backtest
-import pages.education
-import pages.lab
 
 app.layout = html.Div([
     dcc.Location(id='url'),
